@@ -109,7 +109,7 @@ class AuthenticationController extends Controller
             $message->subject('Reset Your Password');
         });
 
-        return redirect()->route("authentication.forgot_password")->with('success_message', 'We Have Sent Reset Password Link!');
+        return redirect()->route("authentication.forgot_password")->with('success', 'We Have Sent Reset Password Link!');
     }
 
 
@@ -124,12 +124,12 @@ class AuthenticationController extends Controller
         if ($email_record && Hash::check($token, $email_record->token)) {
             if ($email_record->is_expired()) {
                 $email_record->delete();
-                return redirect()->route("authentication.forgot_password")->with('warning_message', 'The Reset Password Link Has Expired!');
+                return redirect()->route("authentication.forgot_password")->with('warning', 'The Reset Password Link Has Expired!');
             }
             return view("authentication.reset_password");
         }
 
-        return redirect()->route("authentication.forgot_password")->with('fail_message', 'You Do Not Have Reset Password Link!');
+        return redirect()->route("authentication.forgot_password")->with('fail', 'You Do Not Have Reset Password Link!');
     }
 
     function reset_password(Request $request, $token)
@@ -145,7 +145,7 @@ class AuthenticationController extends Controller
         if ($email_record && Hash::check($token, $email_record->token)) {
             if ($email_record->is_expired()) {
                 $email_record->delete();
-                return redirect()->route("authentication.forgot_password")->with('warning_message', 'The Reset Password Link Has Expired!');
+                return redirect()->route("authentication.forgot_password")->with('warning', 'The Reset Password Link Has Expired!');
             }
 
             $user = User::where('email', $email)->first();
@@ -154,10 +154,10 @@ class AuthenticationController extends Controller
 
             $email_record->delete();
 
-            return redirect()->route("authentication.login")->with('success_message', 'You Have Reset The Password Successfully!');
+            return redirect()->route("authentication.login")->with('success', 'You Have Reset The Password Successfully!');
         }
 
-        return redirect()->route("authentication.forgot_password")->with('fail_message', 'There Was an Unknow Error!!!');
+        return redirect()->route("authentication.forgot_password")->with('fail', 'There Was an Unknow Error!!!');
     }
 
 
@@ -173,8 +173,8 @@ class AuthenticationController extends Controller
             $user->email_verified_at = Carbon::now();
             $user->update();
             $email_record->delete();
-            return view("authentication.email_verified")->with('success_message', 'Congratulations, You Verified Your Email Successfully!!!');
+            return view("authentication.email_verified");
         }
-        return view("authentication.email_verified")->with('fail_message', 'The Verification Link Is Invalid!!!');
+        return view("authentication.login")->with('fail', 'The Verification Link Is Invalid!!!');
     }
 }
